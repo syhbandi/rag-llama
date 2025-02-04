@@ -7,7 +7,7 @@ use Pgvector\Laravel\Vector;
 
 class Document extends Model
 {
-    protected $fillable = ['path', 'embedding'];
+    protected $fillable = ['path', 'content', 'embedding'];
     protected $casts = [
         'embedding' => Vector::class,
     ];

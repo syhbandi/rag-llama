@@ -33,6 +33,9 @@ class DocumentController extends Controller
             'input' => $text,
         ]);
 
+        dd($response->json());
+
+
         $embedding = $response->json()['data'][0]['embedding'];
 
         $document = new Document();
@@ -44,18 +47,23 @@ class DocumentController extends Controller
         return response()->json($document, 201);
     }
 
+    public function index()
+    {
+        $documents = Document::paginate(10);
+        return response()->json($documents);
+    }
+
     public function ask(Request $request)
     {
         $request->validate([
             'query' => 'required|string',
         ]);
 
-        // embedd the question
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('TOGETHER_AI_API_KEY'),
         ])->post('https://api.together.xyz/v1/embeddings', [
             'model' => 'togethercomputer/m2-bert-80M-8k-retrieval',
-            'input' => $request->question,
+            'input' => $request->input('query'),
         ]);
 
         $embeddedQuestion = $response->json()['data'][0]['embedding'];
@@ -70,24 +78,26 @@ class DocumentController extends Controller
             return response()->json(['message' => 'No relevant references found.'], 404);
         }
 
-        $retrieved_embeddings = $documents->pluck('embedding')->toArray();
-        $retrieved_context = json_encode($retrieved_embeddings); // Convert embeddings into JSON
+        $contents = $documents->pluck('content')->join("\n\n");
 
-        // 4️⃣ Use AI to generate a response using only embeddings
-        $prompt = "You are an AI assistant. Use the following numerical embeddings to infer the context and answer the user's question accurately.\n\n";
-        $prompt .= "Embeddings Data:\n$retrieved_context\n\n";
-        $prompt .= "User Question: " . $request->question . "\n\n";
-        $prompt .= "Provide a clear and helpful answer.";
-
-        $aiResponse = Http::withHeaders([
+        $ai_response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('TOGETHER_AI_API_KEY'),
         ])->post('https://api.together.xyz/v1/completions', [
             'model' => 'meta-llama/Llama-2-7b-chat-hf',
-            'prompt' => $prompt,
-            'max_tokens' => 300,
+            'prompt' => "Based on the following information, answer the user's question:\n\n"
+                . "Information:\n" . $contents . "\n\n"
+                . "Question: " . $request->input('query') . "\n"
+                . "Answer:",
+            'max_tokens' => 500,
             'temperature' => 0.7,
         ]);
 
-        return response()->json($aiResponse->json());
+        $answer = $ai_response->json()['choices'][0]['text'];
+
+        // Step 5: Return the answer to the user
+        return response()->json([
+            'question' => $request->input('query'),
+            'answer' => trim($answer),
+        ]);
     }
 }

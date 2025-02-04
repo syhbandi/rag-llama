@@ -9,4 +9,5 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/documents', [DocumentController::class, 'store']);
+Route::get('/documents', [DocumentController::class, 'index']);
 Route::post('/ask', [DocumentController::class, 'ask']);
