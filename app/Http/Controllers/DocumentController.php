@@ -33,13 +33,11 @@ class DocumentController extends Controller
             'input' => $text,
         ]);
 
-        dd($response->json());
-
-
         $embedding = $response->json()['data'][0]['embedding'];
 
         $document = new Document();
         $document->path = $path;
+        $document->original_name = $request->file('file')->getClientOriginalName();
         $document->content = $text;
         $document->embedding = $embedding;
         $document->save();
@@ -98,6 +96,7 @@ class DocumentController extends Controller
         return response()->json([
             'question' => $request->input('query'),
             'answer' => trim($answer),
+            'references' => $documents->pluck('original_name'),
         ]);
     }
 }

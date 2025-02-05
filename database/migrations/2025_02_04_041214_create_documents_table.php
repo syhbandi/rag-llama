@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->string('path');
+            $table->string('original_name');
             $table->text('content');
             $table->vector('embedding', 768);
             $table->timestamps();
