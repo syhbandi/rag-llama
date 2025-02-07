@@ -107,4 +107,11 @@ class DocumentController extends Controller
             'references' => $documents->pluck('original_name'),
         ]);
     }
+
+    public function delete(Request $request)
+    {
+        $document = Document::find($request->id);
+        $document->delete();
+        return redirect()->route('documents.index');
+    }
 }

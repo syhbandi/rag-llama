@@ -1,3 +1,4 @@
+import DeleteButton from "@/Components/DeleteButton";
 import Pagination from "@/Components/Pagination";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { dateFormat } from "@/utils";
@@ -30,7 +31,7 @@ const Index = ({ documents }) => {
                     documents.data.map((doc) => (
                         <div
                             key={doc.id}
-                            className="bg-white shadow-sm sm:rounded-lg p-5"
+                            className="bg-white shadow-sm sm:rounded-lg p-5 relative group/item"
                         >
                             <h1 className="text-xl font-semibold">
                                 {doc.original_name}
@@ -41,6 +42,9 @@ const Index = ({ documents }) => {
                             <p className="line-clamp-3 text-neutral-500 mt-2">
                                 {doc.content}
                             </p>
+                            <div className="absolute top-0 right-0 m-3 invisible group-hover/item:visible">
+                                <DeleteButton id={doc.id} />
+                            </div>
                         </div>
                     ))
                 ) : (
