@@ -6,6 +6,7 @@ use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 use Pgvector\Laravel\Distance;
 use Pgvector\Laravel\Vector;
 use Smalot\PdfParser\Parser;
@@ -48,7 +49,9 @@ class DocumentController extends Controller
     public function index()
     {
         $documents = Document::paginate(10);
-        return response()->json($documents);
+        return Inertia::render('Documents/Index', [
+            'documents' => $documents,
+        ]);
     }
 
     public function ask(Request $request)
