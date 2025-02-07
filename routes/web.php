@@ -22,6 +22,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
+    Route::get('/documents/create', [DocumentController::class, 'create'])->name('documents.create');
+    Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
 });
 
 require __DIR__ . '/auth.php';

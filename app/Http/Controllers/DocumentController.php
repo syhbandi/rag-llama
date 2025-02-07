@@ -13,6 +13,11 @@ use Smalot\PdfParser\Parser;
 
 class DocumentController extends Controller
 {
+    public function create()
+    {
+        return Inertia::render('Documents/Create');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -43,7 +48,7 @@ class DocumentController extends Controller
         $document->embedding = $embedding;
         $document->save();
 
-        return response()->json($document, 201);
+        return redirect()->route('documents.index');
     }
 
     public function index()
