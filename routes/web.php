@@ -17,6 +17,9 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/applicants', [ApplicantController::class, 'get'])->name('applicants');
+Route::get('/agent', function () {
+    return view('ai_agent');
+})->name('agent');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
